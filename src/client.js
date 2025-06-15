@@ -468,65 +468,11 @@ class RPCClient extends EventEmitter {
    * @returns {Promise}
    */
   setActivity(args = {}, pid = getPid()) {
-    let timestamps;
-    let assets;
-    let party;
-    let secrets;
-    if (args.startTimestamp || args.endTimestamp) {
-      timestamps = {
-        start: args.startTimestamp,
-        end: args.endTimestamp,
-      };
-      if (timestamps.start instanceof Date) {
-        timestamps.start = Math.round(timestamps.start.getTime());
-      }
-      if (timestamps.end instanceof Date) {
-        timestamps.end = Math.round(timestamps.end.getTime());
-      }
-      if (timestamps.start > 2147483647000) {
-        throw new RangeError('timestamps.start must fit into a unix timestamp');
-      }
-      if (timestamps.end > 2147483647000) {
-        throw new RangeError('timestamps.end must fit into a unix timestamp');
-      }
-    }
-    if (
-      args.largeImageKey || args.largeImageText
-      || args.smallImageKey || args.smallImageText
-    ) {
-      assets = {
-        large_image: args.largeImageKey,
-        large_text: args.largeImageText,
-        small_image: args.smallImageKey,
-        small_text: args.smallImageText,
-      };
-    }
-    if (args.partySize || args.partyId || args.partyMax) {
-      party = { id: args.partyId };
-      if (args.partySize || args.partyMax) {
-        party.size = [args.partySize, args.partyMax];
-      }
-    }
-    if (args.matchSecret || args.joinSecret || args.spectateSecret) {
-      secrets = {
-        match: args.matchSecret,
-        join: args.joinSecret,
-        spectate: args.spectateSecret,
-      };
-    }
+    
 
     return this.request(RPCCommands.SET_ACTIVITY, {
       pid,
-      activity: {
-        state: args.state,
-        details: args.details,
-        timestamps,
-        assets,
-        party,
-        secrets,
-        buttons: args.buttons,
-        instance: !!args.instance,
-      },
+      activity: args,
     });
   }
 
